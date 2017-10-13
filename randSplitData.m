@@ -1,4 +1,4 @@
-function [X, y, X_cval, y_cval, X_test, y_test] = randSplitData(X, y, cval_prcnt, test_prcnt)
+function [X_train, y_train, X_cval, y_cval, X_test, y_test] = randSplitData(X, y, cval_prcnt, test_prcnt)
 % Randomizes the order of the training examples and then splits them up
 % where cval_prcnt is the percentage cut to the cross validation set
 % and test_prcnt is the percentage cut to the test set
@@ -17,8 +17,8 @@ m_cval = floor(m * cval_prcnt);
 m_test = floor(m * test_prcnt);
 m_train = m - m_test - m_cval;
 
-X = X_rand(1:m_train,:);
-y = y_rand(1:m_train,:);
+X_train = X_rand(1:m_train,:);
+y_train = y_rand(1:m_train,:);
 
 X_cval = X_rand(m_train+1:m_train+m_cval,:);
 y_cval = y_rand(m_train+1:m_train+m_cval,:);

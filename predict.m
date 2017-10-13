@@ -1,4 +1,5 @@
 function p = predict(X, thetas, layer_dims)
+% Returns the predicted class (numeric from 1:K) of each training example in X
 
 [m n] = size(X);				% Let: m = number of training examples & n = number of features
 L = length(layer_dims);			% Let: L = number of layers

@@ -18,8 +18,8 @@ error_cval = zeros(m,1);
 
 for i = 1:m
 	trained_thetas = trainNeuralNet(X_train(1:i,:), y_train(1:i), lambda, layer_dims, maxIters);
-	error_train(i) = CostGrad(X_train(1:i,:), y_train(1:i), lambda, trained_thetas, layer_dims);
-	error_cval(i) = CostGrad(X_cval, y_cval, lambda, trained_thetas, layer_dims);
+	error_train(i) = CostGrad(X_train(1:i,:), y_train(1:i), 0, trained_thetas, layer_dims);
+	error_cval(i) = CostGrad(X_cval, y_cval, 0, trained_thetas, layer_dims);
 end
 
 figure(1);
@@ -28,6 +28,26 @@ title(sprintf('Neural Network Learning Curves (lambda = %f', lambda));
 xlabel('Number of training examples');
 ylabel('Error');
 axis([0 m 0 n]);
+legend('Train', 'Cross Validation');
+
+
+% Use Cross Validation Curves to optimize lambda
+lambda_vec = 3.^[-7:2];
+cv_error_train = zeros(length(lambda_vec),1);
+cv_error_cval = zeros(length(lambda_vec),1);
+
+for i = 1:length(lambda_vec)
+	trained_thetas = trainNeuralNet(X_train, y_train, lambda_vec(i), layer_dims, maxIters);
+	cv_error_train(i) = CostGrad(X_train, y_train, 0, trained_thetas, layer_dims);
+	cv_error_cval(i) = CostGrad(X_cval, y_cval, 0, trained_thetas, layer_dims);
+end
+
+figure(2);
+plot(lambda_vec, cv_error_train, lambda_vec, cv_error_cval);
+title(sprintf('Neural Network Cross Validation Curves (lambda)'));
+xlabel('lambda');
+ylabel('Error');
+axis([0 max(lambda_vec) 0 n]);
 legend('Train', 'Cross Validation');
 
 pred = predict(X_train, trained_thetas, layer_dims);

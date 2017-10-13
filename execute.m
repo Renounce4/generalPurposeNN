@@ -1,4 +1,4 @@
-function execute(maxIters, lambda, layer_dims)
+function execute(layer_dims, maxIters, lambda)
 
 % Load data, normalize it, randomize it and split it into
 % a training set, cross validation set and test set.
@@ -12,7 +12,37 @@ y = data(:,1);
 
 [m n] = size(X_train);
 
+
+if ~exist('lambda', 'var') || isempty(lambda)
+	% Use Cross Validation Curves to optimize lambda
+	fprintf('\nRunning Cross Validation over lambda\n');
+
+	lambda_vec = [0 3.^[-7:2]];
+	cv_error_train = zeros(length(lambda_vec),1);
+	cv_error_cval = zeros(length(lambda_vec),1);
+
+	for i = 1:length(lambda_vec)
+		trained_thetas = trainNeuralNet(X_train, y_train, lambda_vec(i), layer_dims, maxIters);
+		cv_error_train(i) = CostGrad(X_train, y_train, 0, trained_thetas, layer_dims);
+		cv_error_cval(i) = CostGrad(X_cval, y_cval, 0, trained_thetas, layer_dims);
+	end
+
+	figure(1);
+	plot(lambda_vec, cv_error_train, lambda_vec, cv_error_cval);
+	title(sprintf('Neural Network Cross Validation Curves (lambda)'));
+	xlabel('lambda');
+	ylabel('Error');
+	axis([0 max(lambda_vec) 0 n]);
+	legend('Train', 'Cross Validation');
+
+	[dummy lambda_idx] = min(cv_error_cval);
+	lambda = lambda_vec(lambda_idx);
+end
+
+
 % Train the network and plot learning curves
+fprintf('\nCreating Learning Curves with lambda = %f\n', lambda);
+
 error_train = zeros(m,1);
 error_cval = zeros(m,1);
 
@@ -22,32 +52,12 @@ for i = 1:m
 	error_cval(i) = CostGrad(X_cval, y_cval, 0, trained_thetas, layer_dims);
 end
 
-figure(1);
+figure(2);
 plot(1:m, error_train, 1:m, error_cval);
 title(sprintf('Neural Network Learning Curves (lambda = %f', lambda));
 xlabel('Number of training examples');
 ylabel('Error');
 axis([0 m 0 n]);
-legend('Train', 'Cross Validation');
-
-
-% Use Cross Validation Curves to optimize lambda
-lambda_vec = 3.^[-7:2];
-cv_error_train = zeros(length(lambda_vec),1);
-cv_error_cval = zeros(length(lambda_vec),1);
-
-for i = 1:length(lambda_vec)
-	trained_thetas = trainNeuralNet(X_train, y_train, lambda_vec(i), layer_dims, maxIters);
-	cv_error_train(i) = CostGrad(X_train, y_train, 0, trained_thetas, layer_dims);
-	cv_error_cval(i) = CostGrad(X_cval, y_cval, 0, trained_thetas, layer_dims);
-end
-
-figure(2);
-plot(lambda_vec, cv_error_train, lambda_vec, cv_error_cval);
-title(sprintf('Neural Network Cross Validation Curves (lambda)'));
-xlabel('lambda');
-ylabel('Error');
-axis([0 max(lambda_vec) 0 n]);
 legend('Train', 'Cross Validation');
 
 pred = predict(X_train, trained_thetas, layer_dims);

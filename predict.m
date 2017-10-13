@@ -12,24 +12,19 @@ K = layer_dims(L);				% Let: K = number of classes (output neurons)
 % ========== Calculate Activations ========== %
 
 strt = 1;
-a = [ones(m,1), X]';
-reg_thetas = [];
+a = X';
 
 for l = 1:(L-1)
 
+	a = [ones(1,m); a];
 	s1 = layer_dims(l+1);
 	s2 = layer_dims(l)+1;
 	theta = reshape(thetas(strt:strt + (s1*s2) - 1), s1, s2);
-	reg_thetas = [reg_thetas; [zeros(s1,1), theta(:,2:end)](:)];
-	a = [a; [ones(1,m); sigmoid(theta * a([sum(layer_dims(1:l-1)+1) + 1:sum(layer_dims(1:l)+1)],:))]];
+	a = sigmoid(theta * a);
 	strt += s1*s2;
 
 end
 
-
-% ========== Extract Hypothesis ========== %
-
-h = a([sum(layer_dims(1:L-1) + 1) + 2:end],:)';
-[dummy p] = max(h, [], 2);
-
+[dummy p] = max(a);
+p = p(:);
 end

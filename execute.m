@@ -1,4 +1,5 @@
 function execute(layer_dims, maxIters, lambda)
+% USAGE: function execute(layer_dims, maxIters, lambda)
 
 % Load data, normalize it, randomize it and split it into
 % a training set, cross validation set and test set.

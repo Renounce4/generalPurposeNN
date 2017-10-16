@@ -1,8 +1,17 @@
 function [X_train, y_train, X_cval, y_cval, X_test, y_test] = randSplitData(X, y, cval_prcnt, test_prcnt)
-% Randomizes the order of the training examples and then splits them up
-% where cval_prcnt is the percentage cut to the cross validation set
-% and test_prcnt is the percentage cut to the test set
-% and the remaining is returned in X, y.
+% USAGE: function [X_train, y_train, X_cval, y_cval, X_test, y_test] = randSplitData(X, y, cval_prcnt, test_prcnt)
+%	Randomizes the order of the training examples and then splits them up
+%	where cval_prcnt is the percentage cut to the cross validation set
+%	and test_prcnt is the percentage cut to the test set
+%	and the remaining is returned in X_train, y_train.
+
+if ~exist('test_prcnt', 'var') || isempty(test_prcnt)
+	test_prcnt = .2;
+end
+
+if ~exist('cval_prcnt', 'var') || isempty(cval_prcnt)
+	cval_prcnt = .2;
+end
 
 m = size(X,1);
 

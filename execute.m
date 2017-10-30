@@ -3,18 +3,20 @@ function execute(layer_dims, maxIters, lambda)
 
 % Load data, normalize it, randomize it and split it into
 % a training set, cross validation set and test set.
-data = load('-ascii','testData.txt');
+data = load('-ascii','DataSets/testData.txt'); % 1 label (3 classes), 13 parameters
 
 X = data(:,2:end);
 y = data(:,1);
 
 [X_norm, mu, sig] = featureNormalize(X);
-[X_train, y_train, X_cval, y_cval, X_test, y_test] = randSplitData(X_norm, y, .2, .2);
+[X_batch, y_batch, X_test, y_test] = randSplitData(X_norm, y, .2);
+[X_train, y_train, X_cval, y_cval] = randSplitData(X_batch, y_batch, .2);
 
 [m n] = size(X_train);
 
-
+% If lambda is not specified
 if ~exist('lambda', 'var') || isempty(lambda)
+
 	% Use Cross Validation Curves to optimize lambda
 	fprintf('\nRunning Cross Validation over lambda\n');
 

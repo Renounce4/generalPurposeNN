@@ -1,17 +1,30 @@
-function [X_train, y_train, X_cval, y_cval, X_test, y_test] = randSplitData(X, y, cval_prcnt, test_prcnt)
-% USAGE: function [X_train, y_train, X_cval, y_cval, X_test, y_test] = randSplitData(X, y, cval_prcnt, test_prcnt)
-%	Randomizes the order of the training examples and then splits them up
-%	where cval_prcnt is the percentage cut to the cross validation set
-%	and test_prcnt is the percentage cut to the test set
-%	and the remaining is returned in X_train, y_train.
+function [X_batch, y_batch, X_cut, y_cut] = randSplitData(X, y, cut_proportion)
+% USAGES: function [X_batch, y_batch, X_cut, y_cut] = randSplitData(X, y, cut_proportion)
+%         function [X_batch, y_batch, X_cut, y_cut] = randSplitData(X, y)
+%
+%	Randomizes the order of the training examples and then splits them so
+%	X_cut and y_cut contain cut_proportion of the data and the rest is in
+%	X_batch and y_batch. If cut_proportion is not specified, assumes 50-50 split.
+%
+%	Parameters:
+%		X - num_examples x num_parameters matrix
+%		y - num_examples x [num_labels | 1] matrix
+%		cut_proportion - Scalar [0, 1] proportion of X and y to cut to X_cut and y_cut.
+%			Batch wins with odd num_examples (i.e. 0.5 cut of 5 examples gives 3 to batch).
+%
+%	Returns:
+%		X_batch - randomized selection of 1-cut_proportion examples from X.
+%		y_batch - randomized selection of 1-cut_proportion examples from y.
+%		X_cut - randomized selection of cut_proportion examples from X.
+%		y_cut - randomized selection of cut_proportion examples from y.
 
-if ~exist('test_prcnt', 'var') || isempty(test_prcnt)
-	test_prcnt = .2;
+if ~exist('cut_proportion', 'var') || isempty(cut_proportion)
+	cut_proportion = 0.5;
 end
 
-if ~exist('cval_prcnt', 'var') || isempty(cval_prcnt)
-	cval_prcnt = .2;
-end
+% Ensure cut_proportion is in range
+cut_proportion = max(cut_proportion, 0);
+cut_proportion = min(cut_proportion, 1);
 
 m = size(X,1);
 
@@ -22,17 +35,13 @@ y_rand = y(r,:);
 
 
 % ===== Split ===== %
-m_cval = floor(m * cval_prcnt);
-m_test = floor(m * test_prcnt);
-m_train = m - m_test - m_cval;
+m_cut = floor(m * cut_proportion);
+m_batch = m - m_cut;
 
-X_train = X_rand(1:m_train,:);
-y_train = y_rand(1:m_train,:);
+X_cut = X_rand(1:m_cut,:);
+y_cut = y_rand(1:m_cut,:);
 
-X_cval = X_rand(m_train+1:m_train+m_cval,:);
-y_cval = y_rand(m_train+1:m_train+m_cval,:);
-
-X_test = X_rand(m_train+m_cval+1:m_train+m_cval+m_test,:);
-y_test = y_rand(m_train+m_cval+1:m_train+m_cval+m_test,:);
+X_batch = X_rand(m_cut+1:m_cut+m_batch,:);
+y_batch = y_rand(m_cut+1:m_cut+m_batch,:);
 
 end

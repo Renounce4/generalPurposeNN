@@ -8,5 +8,4 @@ options = optimset('MaxIter', maxIters);
 costFunc = @(p) CostGrad(X, y, lambda, p, layer_dims);
 [trained_thetas J] = fmincg(costFunc, thetas, options);
 
-
 end

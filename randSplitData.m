@@ -7,9 +7,9 @@ function [X_batch, y_batch, X_cut, y_cut] = randSplitData(X, y, cut_proportion)
 %	X_batch and y_batch. If cut_proportion is not specified, assumes 50-50 split.
 %
 %	Parameters:
-%		X - num_examples x num_parameters matrix
-%		y - num_examples x [num_labels | 1] matrix
-%		cut_proportion - Scalar [0, 1] proportion of X and y to cut to X_cut and y_cut.
+%		X - num_examples x num_features matrix.
+%		y - num_examples x [num_labels | 1] matrix.
+%		cut_proportion - scalar [0, 1] proportion of X and y to cut to X_cut and y_cut.
 %			Batch wins with odd num_examples (i.e. 0.5 cut of 5 examples gives 3 to batch).
 %
 %	Returns:
